@@ -75,10 +75,12 @@ install_dependency() {
 }
 
 install_gcloud_apt() {
-  apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates gnupg
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-  apt-get update && apt-get install -y --no-install-recommends google-cloud-sdk
+  echo "Downloading and installing Google Cloud SDK manually to avoid apt memory issues..."
+  curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz
+  tar -xzf google-cloud-cli-linux-x86_64.tar.gz -C /usr/local
+  rm google-cloud-cli-linux-x86_64.tar.gz
+  ln -s /usr/local/google-cloud-sdk/bin/gcloud /usr/local/bin/gcloud
+  ln -s /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
 }
 
 install_gcloud_yum() {
@@ -100,6 +102,15 @@ install_gcloud_dnf() {
   install_gcloud_yum
 }
 
+install_nodejs_manual() {
+  echo "Downloading and installing Node.js manually to avoid apt memory issues..."
+  NODE_VERSION="18.17.1"
+  NODE_DIST="node-v${NODE_VERSION}-linux-x64"
+  curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${NODE_DIST}.tar.xz" -o node.tar.xz
+  tar -xf node.tar.xz -C /usr/local --strip-components=1
+  rm node.tar.xz
+}
+
 
 # Detect OS and install dependencies accordingly.
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -114,8 +125,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   # Linux
   if command -v apt-get &> /dev/null; then
+    apt-get update && apt-get install -y --no-install-recommends xz-utils
     install_dependency "jq" "jq" "apt-get update && apt-get install -y --no-install-recommends jq"
-    install_dependency "npx" "nodejs" "apt-get install -y --no-install-recommends nodejs npm"
+    install_dependency "npx" "nodejs" "install_nodejs_manual"
     install_dependency "gcloud" "google-cloud-sdk" "install_gcloud_apt"
   elif command -v yum &> /dev/null; then
     install_dependency "jq" "jq" "yum install -y jq"
