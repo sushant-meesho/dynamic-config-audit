@@ -75,14 +75,14 @@ install_dependency() {
 }
 
 install_gcloud_apt() {
-  sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates gnupg
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-  sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+  apt-get update && apt-get install -y apt-transport-https ca-certificates gnupg
+  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+  apt-get update && apt-get install -y google-cloud-sdk
 }
 
 install_gcloud_yum() {
-  sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+  tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
 [google-cloud-sdk]
 name=Google Cloud SDK
 baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
@@ -92,7 +92,7 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
-  sudo yum install -y google-cloud-sdk
+  yum install -y google-cloud-sdk
 }
 
 install_gcloud_dnf() {
@@ -114,16 +114,16 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   # Linux
   if command -v apt-get &> /dev/null; then
-    install_dependency "jq" "jq" "sudo apt-get update && sudo apt-get install -y jq"
-    install_dependency "npx" "nodejs" "sudo apt-get install -y nodejs npm"
+    install_dependency "jq" "jq" "apt-get update && apt-get install -y jq"
+    install_dependency "npx" "nodejs" "apt-get install -y nodejs npm"
     install_dependency "gcloud" "google-cloud-sdk" "install_gcloud_apt"
   elif command -v yum &> /dev/null; then
-    install_dependency "jq" "jq" "sudo yum install -y jq"
-    install_dependency "npx" "nodejs" "sudo yum install -y nodejs"
+    install_dependency "jq" "jq" "yum install -y jq"
+    install_dependency "npx" "nodejs" "yum install -y nodejs"
     install_dependency "gcloud" "google-cloud-sdk" "install_gcloud_yum"
   elif command -v dnf &> /dev/null; then
-    install_dependency "jq" "jq" "sudo dnf install -y jq"
-    install_dependency "npx" "nodejs" "sudo dnf install -y nodejs"
+    install_dependency "jq" "jq" "dnf install -y jq"
+    install_dependency "npx" "nodejs" "dnf install -y nodejs"
     install_dependency "gcloud" "google-cloud-sdk" "install_gcloud_dnf"
   else
     echo "Error: Could not find a supported package manager (apt, yum, dnf). Please install 'jq', 'nodejs', and 'gcloud' manually."
