@@ -1,0 +1,13 @@
+.pre-commit-config.yaml
+trufflehog/
+
+./repositories
+
+# Environment variables
+.env
+
+# Credentials and secrets
+*.json
+
+# Generated CSV files
+*.csv
