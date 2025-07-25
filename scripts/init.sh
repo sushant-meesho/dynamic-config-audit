@@ -75,10 +75,10 @@ install_dependency() {
 }
 
 install_gcloud_apt() {
-  apt-get update && apt-get install -y apt-transport-https ca-certificates gnupg
+  apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates gnupg
   echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-  apt-get update && apt-get install -y google-cloud-sdk
+  apt-get update && apt-get install -y --no-install-recommends google-cloud-sdk
 }
 
 install_gcloud_yum() {
@@ -114,8 +114,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   # Linux
   if command -v apt-get &> /dev/null; then
-    install_dependency "jq" "jq" "apt-get update && apt-get install -y jq"
-    install_dependency "npx" "nodejs" "apt-get install -y nodejs npm"
+    install_dependency "jq" "jq" "apt-get update && apt-get install -y --no-install-recommends jq"
+    install_dependency "npx" "nodejs" "apt-get install -y --no-install-recommends nodejs npm"
     install_dependency "gcloud" "google-cloud-sdk" "install_gcloud_apt"
   elif command -v yum &> /dev/null; then
     install_dependency "jq" "jq" "yum install -y jq"
